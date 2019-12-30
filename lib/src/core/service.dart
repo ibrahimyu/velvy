@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:velvy/src/core/mapper.dart';
+import 'package:velvy/src/core/codec.dart';
 import 'query.dart';
 
 class Service<T> {
@@ -22,6 +22,9 @@ class Service<T> {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
+
+    toMap = (m) => m;
+    fromMap = (map) => map;
   }
 
   Future<List<T>> find({Query query, Map<String, String> headers}) async {
@@ -33,10 +36,17 @@ class Service<T> {
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode < 300) {
-      Map<String, dynamic> res = json.decode(response.body);
-      List body = res['data'];
+      var res = json.decode(response.body);
+      List body;
+
+      if (res is List) {
+        body = res;
+      } else {
+        body = res['data'];
+      }
 
       List<T> result = body.map((item) => fromMap(item)).toList();
+      print(result);
       return result;
     } else {
       throw 'Failed to get data. Error HTTP ${response.statusCode}';
@@ -62,7 +72,7 @@ class Service<T> {
 
       return result;
     } else {
-      throw 'Failed to get data';
+      throw 'Failed to get data. Error HTTP ${response.statusCode}';
     }
   }
 
@@ -72,7 +82,7 @@ class Service<T> {
     }
     headers.addAll(defaultHeaders);
 
-    var response = await http.get('url/$id', headers: headers);
+    var response = await http.get('$url/$id', headers: headers);
 
     if (response.statusCode < 300) {
       var map = json.decode(response.body);
@@ -80,7 +90,7 @@ class Service<T> {
 
       return result;
     } else {
-      throw 'Failed to get data';
+      throw 'Failed to get data. Error HTTP ${response.statusCode}';
     }
   }
 
@@ -90,7 +100,7 @@ class Service<T> {
     }
     headers.addAll(defaultHeaders);
 
-    var response = await http.put('url/$id',
+    var response = await http.put('$url/$id',
         body: data, headers: headers, encoding: encoding);
 
     if (response.statusCode < 300) {
@@ -99,7 +109,7 @@ class Service<T> {
 
       return result;
     } else {
-      throw 'Failed to get data';
+      throw 'Failed to get data. Error HTTP ${response.statusCode}';
     }
   }
 
@@ -109,7 +119,7 @@ class Service<T> {
     }
     headers.addAll(defaultHeaders);
 
-    var response = await http.delete('url/$id', headers: headers);
+    var response = await http.delete('$url/$id', headers: headers);
 
     if (response.statusCode < 300) {
       var map = json.decode(response.body);
@@ -117,7 +127,7 @@ class Service<T> {
 
       return result;
     } else {
-      throw 'Failed to get data';
+      throw 'Failed to get data. Error HTTP ${response.statusCode}';
     }
   }
 }

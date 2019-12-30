@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:velvy/src/core/model.dart';
 
 typedef ItemBuilder<T> = Widget Function(BuildContext context, T item);
 
-class DataList<T extends Model> extends StatelessWidget {
+class DataList<T> extends StatelessWidget {
   final Widget loading;
   final Widget empty;
   final Future<List<T>> future;
@@ -16,7 +15,7 @@ class DataList<T extends Model> extends StatelessWidget {
     this.loading,
     this.empty,
     this.future,
-    this.shrinkWrap,
+    this.shrinkWrap = false,
     this.physics,
     this.builder,
   }) : super(key: key);
@@ -27,11 +26,11 @@ class DataList<T extends Model> extends StatelessWidget {
       future: future,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return loading ?? Container();
+          return loading ?? Center(child: Text('Loading...'));
         }
 
         if (!snapshot.hasData || snapshot.data.length == 0) {
-          return empty ?? Container();
+          return empty ?? Center(child: Text('No data.'));
         }
 
         return ListView.builder(
