@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 typedef ItemBuilder<T> = Widget Function(BuildContext context, T item);
 
-class DataList<T> extends StatelessWidget {
+class DataListView<T> extends StatelessWidget {
   final Widget loading;
   final Widget empty;
   final Future<List<T>> future;
@@ -10,7 +10,7 @@ class DataList<T> extends StatelessWidget {
   final ScrollPhysics physics;
   final ItemBuilder<T> builder;
 
-  const DataList({
+  const DataListView({
     Key key,
     this.loading,
     this.empty,
