@@ -9,5 +9,8 @@ export 'src/core/result.dart';
 export 'src/core/serializable.dart';
 export 'src/core/service.dart';
 
+export 'src/auth/authenticator.dart';
+export 'src/auth/user.dart';
+
 export 'src/widgets/data_list_view.dart';
 export 'src/widgets/data_table_view.dart';
