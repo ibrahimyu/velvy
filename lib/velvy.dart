@@ -1,6 +1,7 @@
 library velvy;
 
-export 'src/core/app.dart';
+export 'src/core/velvy.dart';
+export 'src/core/velvy_config.dart';
 export 'src/core/codec.dart';
 export 'src/core/model.dart';
 export 'src/core/parser.dart';

@@ -1,13 +1,13 @@
 import 'package:velvy/src/core/service.dart';
 
-import 'app_config.dart';
+import 'velvy_config.dart';
 
-class App {
-  static AppConfig config = AppConfig();
+class Velvy {
+  static VelvyConfig config = VelvyConfig();
 
   String baseUrl;
 
-  App({this.baseUrl}) {
+  Velvy({this.baseUrl}) {
     if (baseUrl == null) {
       baseUrl = config.url;
     }
