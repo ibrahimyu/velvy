@@ -4,6 +4,7 @@ class User {
   String email;
   String phone;
   String photoUrl;
+  String accessToken;
 
   User({
     this.id,
@@ -11,5 +12,6 @@ class User {
     this.email,
     this.phone,
     this.photoUrl,
+    this.accessToken,
   });
 }
