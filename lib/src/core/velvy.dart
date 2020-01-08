@@ -19,7 +19,7 @@ class Velvy {
   }) {
     return Service<T>(
       url: '$baseUrl/$name',
-      defaultHeaders: config.defaultHeaders..addAll(headers),
+      defaultHeaders: config.defaultHeaders..addAll(headers ?? {}),
     );
   }
 }
