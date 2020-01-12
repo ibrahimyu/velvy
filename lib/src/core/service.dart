@@ -39,6 +39,7 @@ class Service<T> {
       var res = json.decode(response.body);
       List body;
 
+      // if it's paginated, the real data would be on the data property.
       if (res is List) {
         body = res;
       } else {
@@ -46,7 +47,7 @@ class Service<T> {
       }
 
       List<T> result = body.map((item) => fromMap(item)).toList();
-      print(result);
+
       return result;
     } else {
       throw 'Failed to get data. Error HTTP ${response.statusCode}';

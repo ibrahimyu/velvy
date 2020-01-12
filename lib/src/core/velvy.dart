@@ -1,4 +1,5 @@
 import 'package:velvy/src/core/service.dart';
+import 'package:velvy/velvy.dart';
 
 import 'velvy_config.dart';
 
@@ -22,4 +23,6 @@ class Velvy {
       defaultHeaders: config.defaultHeaders..addAll(headers ?? {}),
     );
   }
+
+  Authenticator auth;
 }
