@@ -3,36 +3,26 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:velvy/src/core/codec.dart';
 import 'query.dart';
+import 'velvy.dart';
 
 class Service<T> {
   String url;
-  Map<String, String> defaultHeaders;
   Encoding encoding;
   EncodeCallback toMap;
   DecodeCallback fromMap;
 
   Service({
     this.url,
-    this.defaultHeaders,
     this.encoding,
     this.toMap,
     this.fromMap,
   }) {
-    defaultHeaders = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-
     toMap = (m) => m;
     fromMap = (map) => map;
   }
 
-  Future<List<T>> find({Query query, Map<String, String> headers}) async {
-    if (headers == null) {
-      headers = {};
-    }
-    headers.addAll(defaultHeaders);
-
+  Future<List<T>> find({Query query}) async {
+    var headers = Velvy.instance.defaultHeaders;
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode < 300) {
@@ -54,12 +44,8 @@ class Service<T> {
     }
   }
 
-  Future<T> create({data, Map<String, String> headers}) async {
-    if (headers == null) {
-      headers = {};
-    }
-    headers.addAll(defaultHeaders);
-
+  Future<T> create({data}) async {
+    var headers = Velvy.instance.defaultHeaders;
     var response = await http.post(
       url,
       body: json.encode(data),
@@ -78,11 +64,7 @@ class Service<T> {
   }
 
   Future<T> get(dynamic id, {Map<String, String> headers}) async {
-    if (headers == null) {
-      headers = {};
-    }
-    headers.addAll(defaultHeaders);
-
+    var headers = Velvy.instance.defaultHeaders;
     var response = await http.get('$url/$id', headers: headers);
 
     if (response.statusCode < 300) {
@@ -95,14 +77,14 @@ class Service<T> {
     }
   }
 
-  Future<T> update(dynamic id, {data, Map<String, String> headers}) async {
-    if (headers == null) {
-      headers = {};
-    }
-    headers.addAll(defaultHeaders);
-
-    var response = await http.put('$url/$id',
-        body: data, headers: headers, encoding: encoding);
+  Future<T> update(dynamic id, {data}) async {
+    var headers = Velvy.instance.defaultHeaders;
+    var response = await http.put(
+      '$url/$id',
+      body: json.encode(data),
+      headers: headers,
+      encoding: encoding,
+    );
 
     if (response.statusCode < 300) {
       var map = json.decode(response.body);
@@ -115,11 +97,7 @@ class Service<T> {
   }
 
   Future<T> destroy(dynamic id, {Map<String, String> headers}) async {
-    if (headers == null) {
-      headers = {};
-    }
-    headers.addAll(defaultHeaders);
-
+    var headers = Velvy.instance.defaultHeaders;
     var response = await http.delete('$url/$id', headers: headers);
 
     if (response.statusCode < 300) {

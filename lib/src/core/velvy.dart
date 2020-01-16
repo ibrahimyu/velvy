@@ -1,17 +1,15 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvy/src/core/service.dart';
 import 'package:velvy/velvy.dart';
 
-import 'velvy_config.dart';
-
 class Velvy {
-  static VelvyConfig config = VelvyConfig();
+  static Velvy instance = Velvy();
 
-  String baseUrl;
+  String url;
+  Map<String, String> defaultHeaders;
 
-  Velvy({this.baseUrl}) {
-    if (baseUrl == null) {
-      baseUrl = config.url;
-    }
+  Velvy() {
+    reload();
   }
 
   Service<T> service<T>(
@@ -19,10 +17,23 @@ class Velvy {
     Map<String, String> headers,
   }) {
     return Service<T>(
-      url: '$baseUrl/$name',
-      defaultHeaders: config.defaultHeaders..addAll(headers ?? {}),
+      url: '$url/$name',
     );
   }
 
   Authenticator auth;
+
+  void reload() async {
+    defaultHeaders = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    var pref = await SharedPreferences.getInstance();
+    var token = pref.getString('access_token');
+
+    if (token != null) {
+      defaultHeaders['Authorization'] = 'Bearer $token';
+    }
+  }
 }

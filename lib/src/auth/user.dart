@@ -14,4 +14,15 @@ class User {
     this.photoUrl,
     this.accessToken,
   });
+
+  factory User.fromMap(Map<String, dynamic> map) {
+    return User(
+      id: map['id'],
+      name: map['name'],
+      email: map['email'],
+      phone: map['phone'],
+      photoUrl: map['photo_url'],
+      accessToken: map['access_token'],
+    );
+  }
 }
