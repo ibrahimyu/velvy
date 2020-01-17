@@ -5,7 +5,7 @@ import 'package:velvy/src/core/codec.dart';
 import 'query.dart';
 import 'velvy.dart';
 
-class Service<T> {
+class Service {
   String url;
   Encoding encoding;
   EncodeCallback toMap;
@@ -21,7 +21,7 @@ class Service<T> {
     fromMap = (map) => map;
   }
 
-  Future<List<T>> find({Query query}) async {
+  Future<List> find({Query query}) async {
     var headers = Velvy.instance.defaultHeaders;
     var response = await http.get(url, headers: headers);
 
@@ -36,7 +36,7 @@ class Service<T> {
         body = res['data'];
       }
 
-      List<T> result = body.map((item) => fromMap(item)).toList();
+      List result = body.map((item) => fromMap(item)).toList();
 
       return result;
     } else {
@@ -44,7 +44,7 @@ class Service<T> {
     }
   }
 
-  Future<T> create({data}) async {
+  Future create({data}) async {
     var headers = Velvy.instance.defaultHeaders;
     var response = await http.post(
       url,
@@ -63,7 +63,7 @@ class Service<T> {
     }
   }
 
-  Future<T> get(dynamic id, {Map<String, String> headers}) async {
+  Future get(dynamic id, {Map<String, String> headers}) async {
     var headers = Velvy.instance.defaultHeaders;
     var response = await http.get('$url/$id', headers: headers);
 
@@ -77,7 +77,7 @@ class Service<T> {
     }
   }
 
-  Future<T> update(dynamic id, {data}) async {
+  Future update(dynamic id, {data}) async {
     var headers = Velvy.instance.defaultHeaders;
     var response = await http.put(
       '$url/$id',
@@ -96,7 +96,7 @@ class Service<T> {
     }
   }
 
-  Future<T> destroy(dynamic id, {Map<String, String> headers}) async {
+  Future destroy(dynamic id, {Map<String, String> headers}) async {
     var headers = Velvy.instance.defaultHeaders;
     var response = await http.delete('$url/$id', headers: headers);
 

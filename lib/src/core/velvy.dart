@@ -12,11 +12,11 @@ class Velvy {
     reload();
   }
 
-  Service<T> service<T>(
+  Service service(
     String name, {
     Map<String, String> headers,
   }) {
-    return Service<T>(
+    return Service(
       url: '$url/$name',
     );
   }

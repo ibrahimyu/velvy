@@ -45,4 +45,20 @@ class UsernamePasswordAuthenticator extends Authenticator {
 
     return true;
   }
+
+  @override
+  Future<bool> check() async {
+    var pref = await SharedPreferences.getInstance();
+    var token = pref.getString('access_token');
+
+    if (token != null && token.isNotEmpty) {
+      var result = await Velvy.instance.service('user').get('');
+
+      if (result['id'] != null) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }
