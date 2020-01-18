@@ -8,23 +8,10 @@ class UsernamePasswordAuthenticator extends Authenticator {
   }
 
   @override
-  Future<Map<String, String>> getHeaders() async {
-    // harusnya ada shared preferences untuk nyimpen token.
-    // nanti ada confignya, tapi saat ini nama tokennya kita
-    // set access_token di secure storage.
-    var pref = await SharedPreferences.getInstance();
-    var token = pref.getString('access_token');
-
-    return {
-      'Authentication': 'Bearer $token',
-    };
-  }
-
-  @override
   Future<User> getUser({bool cache = false}) async {
     var result = await Velvy.instance.service('user').get('');
 
-    return result;
+    return User.fromMap(result.data);
   }
 
   @override
@@ -33,9 +20,9 @@ class UsernamePasswordAuthenticator extends Authenticator {
         await Velvy.instance.service('login').create(data: credentials);
 
     var pref = await SharedPreferences.getInstance();
-    pref.setString('access_token', result['api_token']);
+    pref.setString('access_token', result.data['api_token']);
 
-    return User.fromMap(result);
+    return User.fromMap(result.data);
   }
 
   @override
@@ -54,7 +41,7 @@ class UsernamePasswordAuthenticator extends Authenticator {
     if (token != null && token.isNotEmpty) {
       var result = await Velvy.instance.service('user').get('');
 
-      if (result['id'] != null) {
+      if (result.data['id'] != null) {
         return true;
       }
     }

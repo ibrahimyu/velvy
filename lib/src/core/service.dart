@@ -1,27 +1,21 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:velvy/src/core/codec.dart';
+import 'package:velvy/velvy.dart';
+import 'query_result.dart';
 import 'query.dart';
 import 'velvy.dart';
 
 class Service {
   String url;
   Encoding encoding;
-  EncodeCallback toMap;
-  DecodeCallback fromMap;
 
   Service({
     this.url,
     this.encoding,
-    this.toMap,
-    this.fromMap,
-  }) {
-    toMap = (m) => m;
-    fromMap = (map) => map;
-  }
+  });
 
-  Future<List> find({Query query}) async {
+  Future<QueryResult> find({Query query}) async {
     var headers = Velvy.instance.defaultHeaders;
     var response = await http.get(url, headers: headers);
 
@@ -36,15 +30,15 @@ class Service {
         body = res['data'];
       }
 
-      List result = body.map((item) => fromMap(item)).toList();
+      List result = body;
 
-      return result;
+      return QueryResult(documents: result);
     } else {
       throw 'Failed to get data. Error HTTP ${response.statusCode}';
     }
   }
 
-  Future create({data}) async {
+  Future<DocumentResult> create({data}) async {
     var headers = Velvy.instance.defaultHeaders;
     var response = await http.post(
       url,
@@ -55,29 +49,28 @@ class Service {
 
     if (response.statusCode < 300) {
       var map = json.decode(response.body);
-      var result = fromMap(map);
+      var result = map;
 
-      return result;
+      return DocumentResult(data: result);
     } else {
       throw 'Failed to get data. Error HTTP ${response.statusCode}';
     }
   }
 
-  Future get(dynamic id, {Map<String, String> headers}) async {
+  Future<DocumentResult> get(dynamic id, {Map<String, String> headers}) async {
     var headers = Velvy.instance.defaultHeaders;
     var response = await http.get('$url/$id', headers: headers);
 
     if (response.statusCode < 300) {
-      var map = json.decode(response.body);
-      var result = fromMap(map);
+      var result = json.decode(response.body);
 
-      return result;
+      return DocumentResult(data: result);
     } else {
       throw 'Failed to get data. Error HTTP ${response.statusCode}';
     }
   }
 
-  Future update(dynamic id, {data}) async {
+  Future<DocumentResult> update(dynamic id, {data}) async {
     var headers = Velvy.instance.defaultHeaders;
     var response = await http.put(
       '$url/$id',
@@ -87,24 +80,22 @@ class Service {
     );
 
     if (response.statusCode < 300) {
-      var map = json.decode(response.body);
-      var result = fromMap(map);
+      var result = json.decode(response.body);
 
-      return result;
+      return DocumentResult(data: result);
     } else {
       throw 'Failed to get data. Error HTTP ${response.statusCode}';
     }
   }
 
-  Future destroy(dynamic id, {Map<String, String> headers}) async {
+  Future<bool> destroy(dynamic id, {Map<String, String> headers}) async {
     var headers = Velvy.instance.defaultHeaders;
     var response = await http.delete('$url/$id', headers: headers);
 
     if (response.statusCode < 300) {
-      var map = json.decode(response.body);
-      var result = fromMap(map);
+      var result = json.decode(response.body);
 
-      return result;
+      return true;
     } else {
       throw 'Failed to get data. Error HTTP ${response.statusCode}';
     }
