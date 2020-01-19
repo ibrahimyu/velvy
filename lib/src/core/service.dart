@@ -30,11 +30,17 @@ class Service {
         body = res['data'];
       }
 
-      List result = body;
-
-      return QueryResult(documents: result);
+      return QueryResult(
+        documents: body
+            .map((i) => DocumentResult(data: i, status: response.statusCode))
+            .toList(),
+        status: response.statusCode,
+      );
     } else {
-      throw 'Failed to get data. Error HTTP ${response.statusCode}';
+      return QueryResult(
+        documents: null,
+        status: response.statusCode,
+      );
     }
   }
 
@@ -51,9 +57,15 @@ class Service {
       var map = json.decode(response.body);
       var result = map;
 
-      return DocumentResult(data: result);
+      return DocumentResult(
+        data: result,
+        status: response.statusCode,
+      );
     } else {
-      throw 'Failed to get data. Error HTTP ${response.statusCode}';
+      return DocumentResult(
+        data: null,
+        status: response.statusCode,
+      );
     }
   }
 
@@ -64,9 +76,15 @@ class Service {
     if (response.statusCode < 300) {
       var result = json.decode(response.body);
 
-      return DocumentResult(data: result);
+      return DocumentResult(
+        data: result,
+        status: response.statusCode,
+      );
     } else {
-      throw 'Failed to get data. Error HTTP ${response.statusCode}';
+      return DocumentResult(
+        data: null,
+        status: response.statusCode,
+      );
     }
   }
 
@@ -82,22 +100,35 @@ class Service {
     if (response.statusCode < 300) {
       var result = json.decode(response.body);
 
-      return DocumentResult(data: result);
+      return DocumentResult(
+        data: result,
+        status: response.statusCode,
+      );
     } else {
-      throw 'Failed to get data. Error HTTP ${response.statusCode}';
+      return DocumentResult(
+        data: null,
+        status: response.statusCode,
+      );
     }
   }
 
-  Future<bool> destroy(dynamic id, {Map<String, String> headers}) async {
+  Future<DocumentResult> destroy(dynamic id,
+      {Map<String, String> headers}) async {
     var headers = Velvy.instance.defaultHeaders;
     var response = await http.delete('$url/$id', headers: headers);
 
     if (response.statusCode < 300) {
       var result = json.decode(response.body);
 
-      return true;
+      return DocumentResult(
+        data: result,
+        status: response.statusCode,
+      );
     } else {
-      throw 'Failed to get data. Error HTTP ${response.statusCode}';
+      return DocumentResult(
+        data: null,
+        status: response.statusCode,
+      );
     }
   }
 }
