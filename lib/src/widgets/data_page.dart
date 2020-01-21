@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:velvy/src/widgets/paginator.dart';
+import 'package:velvy/velvy.dart';
+
+typedef QueryResultBuilder = Widget Function(
+    BuildContext context, QueryResult result);
 
 class DataPage extends StatefulWidget {
+  final Service service;
   final String title;
+  final QueryResultBuilder builder;
+  final FloatingActionButtonLocation floatingActionButtonLocation;
+  final Widget floatingActionButton;
+  final Widget drawer;
+
   const DataPage({
     Key key,
     this.title,
+    this.service,
+    this.builder,
+    this.floatingActionButton,
+    this.drawer,
+    this.floatingActionButtonLocation = FloatingActionButtonLocation.endDocked,
   }) : super(key: key);
 
   @override
@@ -13,24 +28,51 @@ class DataPage extends StatefulWidget {
 }
 
 class _DataPageState extends State<DataPage> {
-  bool _isSearching;
-  TextEditingController _searchCtrl;
+  bool _isSearching = false;
+  TextEditingController _searchCtrl = TextEditingController(text: '');
   Widget content;
+
+  Future<QueryResult> result;
+
+  @override
+  void initState() {
+    super.initState();
+
+    result = widget.service.find();
+  }
+
+  int currentPage = 1;
+
+  void reload() {
+    result = widget.service.find(
+        params: '?page=$currentPage' +
+            (_searchCtrl.text.isNotEmpty ? '&q=${_searchCtrl.text}' : ''));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: widget.drawer,
       appBar: AppBar(
         title: _isSearching
             ? TextField(
+                autofocus: true,
                 controller: _searchCtrl,
-                decoration: InputDecoration(hintText: 'Search'),
+                decoration: InputDecoration(
+                  hintText: 'Search',
+                ),
+                style: TextStyle(color: Colors.white),
+                onChanged: (val) {
+                  setState(() {
+                    reload();
+                  });
+                },
               )
             : Text(widget.title),
         actions: <Widget>[
           _isSearching
               ? IconButton(
-                  icon: Icon(Icons.check),
+                  icon: Icon(Icons.close),
                   onPressed: () {
                     setState(() {
                       _isSearching = false;
@@ -47,12 +89,50 @@ class _DataPageState extends State<DataPage> {
                 )
         ],
       ),
-      body: Column(children: <Widget>[
-        Expanded(
-          child: content,
+      body: FutureBuilder<QueryResult>(
+        future: result,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: Text('Loading...'),
+            );
+          }
+
+          return widget.builder(context, snapshot.data);
+        },
+      ),
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        child: Row(
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.arrow_left),
+              onPressed: currentPage > 1
+                  ? () {
+                      if (currentPage > 1) {
+                        setState(() {
+                          currentPage--;
+                          reload();
+                        });
+                      }
+                    }
+                  : null,
+            ),
+            Text("$currentPage"),
+            IconButton(
+              icon: Icon(Icons.arrow_right),
+              onPressed: () {
+                setState(() {
+                  currentPage++;
+                  reload();
+                });
+              },
+            ),
+          ],
         ),
-        Paginator()
-      ]),
+      ),
+      floatingActionButton: widget.floatingActionButton,
+      floatingActionButtonLocation: widget.floatingActionButtonLocation,
     );
   }
 }

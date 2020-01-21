@@ -15,9 +15,9 @@ class Service {
     this.encoding,
   });
 
-  Future<QueryResult> find({Query query}) async {
+  Future<QueryResult> find({String params}) async {
     var headers = Velvy.instance.defaultHeaders;
-    var response = await http.get(url, headers: headers);
+    var response = await http.get(url + params, headers: headers);
 
     if (response.statusCode < 300) {
       var res = json.decode(response.body);
@@ -26,16 +26,25 @@ class Service {
       // if it's paginated, the real data would be on the data property.
       if (res is List) {
         body = res;
+
+        return QueryResult(
+          documents: body
+              .map((i) => DocumentResult(data: i, status: response.statusCode))
+              .toList(),
+          status: response.statusCode,
+        );
       } else {
         body = res['data'];
-      }
 
-      return QueryResult(
-        documents: body
-            .map((i) => DocumentResult(data: i, status: response.statusCode))
-            .toList(),
-        status: response.statusCode,
-      );
+        return QueryResult(
+          currentPage: res['current_page'],
+          lastPage: res['last_page'],
+          documents: body
+              .map((i) => DocumentResult(data: i, status: response.statusCode))
+              .toList(),
+          status: response.statusCode,
+        );
+      }
     } else {
       return QueryResult(
         documents: null,

@@ -4,6 +4,8 @@ class Query {
   bool paginate;
   int page;
   List<WhereOp> _where;
+  String sort;
+  bool descending;
 
   Query({
     this.searchTerm,
@@ -21,6 +23,8 @@ class Query {
   void eagerLoad(String relation) {
     eagerLoads.add(relation);
   }
+
+  String build(String prefix, String service) {}
 }
 
 class WhereOp {

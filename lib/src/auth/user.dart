@@ -22,7 +22,7 @@ class User {
       email: map['email'],
       phone: map['phone'],
       photoUrl: map['photo_url'],
-      accessToken: map['access_token'],
+      accessToken: map['api_token'],
     );
   }
 }

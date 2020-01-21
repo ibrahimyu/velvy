@@ -17,3 +17,4 @@ export 'src/auth/username_password.dart';
 
 export 'src/widgets/data_list_view.dart';
 export 'src/widgets/data_table_view.dart';
+export 'src/widgets/data_page.dart';
