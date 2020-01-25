@@ -34,19 +34,21 @@ class _DataPageState extends State<DataPage> {
 
   Future<QueryResult> result;
 
+  int currentPage = 1;
+
   @override
   void initState() {
     super.initState();
 
-    result = widget.service.find();
+    reload();
   }
 
-  int currentPage = 1;
-
   void reload() {
-    result = widget.service.find(
-        params: '?page=$currentPage' +
-            (_searchCtrl.text.isNotEmpty ? '&q=${_searchCtrl.text}' : ''));
+    setState(() {
+      result = widget.service.find(
+          params: '?page=$currentPage' +
+              (_searchCtrl.text.isNotEmpty ? '&q=${_searchCtrl.text}' : ''));
+    });
   }
 
   @override
